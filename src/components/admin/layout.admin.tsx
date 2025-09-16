@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
     AppstoreOutlined,
     ExceptionOutlined,
@@ -8,139 +8,82 @@ import {
     MenuFoldOutlined,
     MenuUnfoldOutlined,
     AliwangwangOutlined,
-    BugOutlined,
-    ScheduleOutlined,
 } from '@ant-design/icons';
 import { Layout, Menu, Dropdown, Space, message, Avatar, Button } from 'antd';
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { Link } from 'react-router-dom';
 import { callLogout } from 'config/api';
+// import { doLogoutAction } from '@/redux/account/accountSlice';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { isMobile } from 'react-device-detect';
-import type { MenuProps } from 'antd';
-import { setLogoutAction } from '@/redux/slice/accountSlide';
-import { ALL_PERMISSIONS } from '@/config/permissions';
 
-const { Content, Sider } = Layout;
+import type { MenuProps } from 'antd';
+
+const { Content, Footer, Sider } = Layout;
+
+
 
 const LayoutAdmin = () => {
-    const location = useLocation();
-
     const [collapsed, setCollapsed] = useState(false);
-    const [activeMenu, setActiveMenu] = useState('');
+    const [activeMenu, setActiveMenu] = useState('dashboard');
     const user = useAppSelector(state => state.account.user);
 
-    const permissions = useAppSelector(state => state.account.user.role.permissions);
-    const [menuItems, setMenuItems] = useState<MenuProps['items']>([]);
+    const [showManageAccount, setShowManageAccount] = useState(false);
 
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
 
-    useEffect(() => {
-        const ACL_ENABLE = import.meta.env.VITE_ACL_ENABLE;
-        if (permissions?.length || ACL_ENABLE === 'false') {
-
-            const viewCompany = permissions?.find(item =>
-                item.apiPath === ALL_PERMISSIONS.COMPANIES.GET_PAGINATE.apiPath
-                && item.method === ALL_PERMISSIONS.COMPANIES.GET_PAGINATE.method
-            )
-
-            const viewUser = permissions?.find(item =>
-                item.apiPath === ALL_PERMISSIONS.USERS.GET_PAGINATE.apiPath
-                && item.method === ALL_PERMISSIONS.USERS.GET_PAGINATE.method
-            )
-
-            const viewJob = permissions?.find(item =>
-                item.apiPath === ALL_PERMISSIONS.JOBS.GET_PAGINATE.apiPath
-                && item.method === ALL_PERMISSIONS.JOBS.GET_PAGINATE.method
-            )
-
-            const viewResume = permissions?.find(item =>
-                item.apiPath === ALL_PERMISSIONS.RESUMES.GET_PAGINATE.apiPath
-                && item.method === ALL_PERMISSIONS.RESUMES.GET_PAGINATE.method
-            )
-
-            const viewRole = permissions?.find(item =>
-                item.apiPath === ALL_PERMISSIONS.ROLES.GET_PAGINATE.apiPath
-                && item.method === ALL_PERMISSIONS.ROLES.GET_PAGINATE.method
-            )
-
-            const viewPermission = permissions?.find(item =>
-                item.apiPath === ALL_PERMISSIONS.PERMISSIONS.GET_PAGINATE.apiPath
-                && item.method === ALL_PERMISSIONS.USERS.GET_PAGINATE.method
-            )
-
-            const full = [
-                {
-                    label: <Link to='/admin'>Dashboard</Link>,
-                    key: '/admin',
-                    icon: <AppstoreOutlined />
-                },
-                ...(viewCompany || ACL_ENABLE === 'false' ? [{
-                    label: <Link to='/admin/company'>Company</Link>,
-                    key: '/admin/company',
-                    icon: <BankOutlined />,
-                }] : []),
-
-                ...(viewUser || ACL_ENABLE === 'false' ? [{
-                    label: <Link to='/admin/user'>User</Link>,
-                    key: '/admin/user',
-                    icon: <UserOutlined />
-                }] : []),
-                ...(viewJob || ACL_ENABLE === 'false' ? [{
-                    label: <Link to='/admin/job'>Job</Link>,
-                    key: '/admin/job',
-                    icon: <ScheduleOutlined />
-                }] : []),
-
-                ...(viewResume || ACL_ENABLE === 'false' ? [{
-                    label: <Link to='/admin/resume'>Resume</Link>,
-                    key: '/admin/resume',
-                    icon: <AliwangwangOutlined />
-                }] : []),
-                ...(viewPermission || ACL_ENABLE === 'false' ? [{
-                    label: <Link to='/admin/permission'>Permission</Link>,
-                    key: '/admin/permission',
-                    icon: <ApiOutlined />
-                }] : []),
-                ...(viewRole || ACL_ENABLE === 'false' ? [{
-                    label: <Link to='/admin/role'>Role</Link>,
-                    key: '/admin/role',
-                    icon: <ExceptionOutlined />
-                }] : []),
-
-
-
-            ];
-
-            setMenuItems(full);
-        }
-    }, [permissions])
-    useEffect(() => {
-        setActiveMenu(location.pathname)
-    }, [location])
-
     const handleLogout = async () => {
         const res = await callLogout();
-        if (res && +res.statusCode === 200) {
-            dispatch(setLogoutAction({}));
+        if (res && res.data) {
+            // dispatch(doLogoutAction());
             message.success('Đăng xuất thành công');
             navigate('/')
         }
     }
 
-    // if (isMobile) {
-    //     items.push({
-    //         label: <label
-    //             style={{ cursor: 'pointer' }}
-    //             onClick={() => handleLogout()}
-    //         >Đăng xuất</label>,
-    //         key: 'logout',
-    //         icon: <LogoutOutlined />
-    //     })
-    // }
+    const items: MenuProps['items'] = [
+        {
+            label: <Link to='/admin'>Dashboard</Link>,
+            key: 'dashboard',
+            icon: <AppstoreOutlined />
+        },
+        {
+            label: <Link to='/admin/company'>Company</Link>,
+            key: 'company',
+            icon: <BankOutlined />,
+        },
+        {
+            label: <Link to='/admin/user'>User</Link>,
+            key: 'user',
+            icon: <UserOutlined />
+        },
+        {
+            label: <Link to='/admin/resume'>Resume</Link>,
+            key: 'resume',
+            icon: <AliwangwangOutlined />
+        },
+        {
+            label: <Link to='/admin/permission'>Permission</Link>,
+            key: 'permission',
+            icon: <ApiOutlined />
+        },
+        {
+            label: <Link to='/admin/role'>Role</Link>,
+            key: 'role',
+            icon: <ExceptionOutlined />
+        },
+
+    ];
 
     const itemsDropdown = [
+        {
+            label: <label
+                style={{ cursor: 'pointer' }}
+                onClick={() => setShowManageAccount(true)}
+            >Quản lý tài khoản</label>,
+            key: 'account',
+        },
         {
             label: <Link to={'/'}>Trang chủ</Link>,
             key: 'home',
@@ -152,7 +95,10 @@ const LayoutAdmin = () => {
             >Đăng xuất</label>,
             key: 'logout',
         },
+
     ];
+
+    // const urlAvatar = `${import.meta.env.VITE_BACKEND_URL}/images/avatar/${user?.avatar}`;
 
     return (
         <>
@@ -167,19 +113,19 @@ const LayoutAdmin = () => {
                         collapsed={collapsed}
                         onCollapse={(value) => setCollapsed(value)}>
                         <div style={{ height: 32, margin: 16, textAlign: 'center' }}>
-                            <BugOutlined />  ADMIN
+                            Admin
                         </div>
                         <Menu
-                            selectedKeys={[activeMenu]}
+                            defaultSelectedKeys={[activeMenu]}
                             mode="inline"
-                            items={menuItems}
+                            items={items}
                             onClick={(e) => setActiveMenu(e.key)}
                         />
                     </Sider>
                     :
                     <Menu
-                        selectedKeys={[activeMenu]}
-                        items={menuItems}
+                        defaultSelectedKeys={[activeMenu]}
+                        items={items}
                         onClick={(e) => setActiveMenu(e.key)}
                         mode="horizontal"
                     />
@@ -187,7 +133,7 @@ const LayoutAdmin = () => {
 
                 <Layout>
                     {!isMobile &&
-                        <div className='admin-header' style={{ display: "flex", justifyContent: "space-between", marginRight: 20 }}>
+                        <div className='admin-header'>
                             <Button
                                 type="text"
                                 icon={collapsed ? React.createElement(MenuUnfoldOutlined) : React.createElement(MenuFoldOutlined)}
@@ -198,12 +144,11 @@ const LayoutAdmin = () => {
                                     height: 64,
                                 }}
                             />
-
                             <Dropdown menu={{ items: itemsDropdown }} trigger={['click']}>
                                 <Space style={{ cursor: "pointer" }}>
-                                    Welcome {user?.name}
-                                    <Avatar> {user?.name?.substring(0, 2)?.toUpperCase()} </Avatar>
-
+                                    ádfasdfasdf
+                                    {/* <Avatar src={urlAvatar} />
+                                {user?.fullName} */}
                                 </Space>
                             </Dropdown>
                         </div>
@@ -211,9 +156,9 @@ const LayoutAdmin = () => {
                     <Content style={{ padding: '15px' }}>
                         <Outlet />
                     </Content>
-                    {/* <Footer style={{ padding: 10, textAlign: 'center' }}>
-                        React Typescript series Nest.JS &copy; Hỏi Dân IT - Made with <HeartTwoTone />
-                    </Footer> */}
+                    {/* <Footer style={{ padding: 0 }}>
+                    React Test Fresher &copy; Hỏi Dân IT - Made with <HeartTwoTone />
+                </Footer> */}
                 </Layout>
             </Layout>
 

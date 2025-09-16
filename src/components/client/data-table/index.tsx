@@ -20,7 +20,7 @@ const DataTable = <
     // sticky = { offsetHeader: 50 },
     loading,
     rowKey = (record) => record.id,
-    scroll,
+    // scroll = { x: 2000 },
     params,
     request,
     search,
@@ -43,7 +43,7 @@ const DataTable = <
                 // sticky={sticky}
                 loading={loading}
                 rowKey={rowKey}
-                scroll={scroll}
+                // scroll={scroll}
                 params={params}
                 request={request}
                 search={search}

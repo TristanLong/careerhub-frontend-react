@@ -1,22 +1,20 @@
-import { Button, Divider, Form, Input, Row, Select, message, notification } from 'antd';
+import { Button, Divider, Form, Input, message, notification } from 'antd';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { callRegister } from 'config/api';
 import styles from 'styles/auth.module.scss';
-import { IUser } from '@/types/backend';
-const { Option } = Select;
 
 
 const RegisterPage = () => {
     const navigate = useNavigate();
     const [isSubmit, setIsSubmit] = useState(false);
 
-    const onFinish = async (values: IUser) => {
-        const { name, email, password, age, gender, address } = values;
+    const onFinish = async (values: any) => {
+        const { fullName, email, password, phone } = values;
         setIsSubmit(true);
-        const res = await callRegister(name, email, password as string, +age, gender, address);
+        const res = await callRegister(fullName, email, password, phone);
         setIsSubmit(false);
-        if (res?.data?.id) {
+        if (res?.data?._id) {
             message.success('Đăng ký tài khoản thành công!');
             navigate('/login')
         } else {
@@ -40,7 +38,7 @@ const RegisterPage = () => {
                             <h2 className={`${styles.text} ${styles["text-large"]}`}> Đăng Ký Tài Khoản </h2>
                             < Divider />
                         </div>
-                        < Form<IUser>
+                        < Form
                             name="basic"
                             // style={{ maxWidth: 600, margin: '0 auto' }}
                             onFinish={onFinish}
@@ -49,7 +47,7 @@ const RegisterPage = () => {
                             <Form.Item
                                 labelCol={{ span: 24 }} //whole column
                                 label="Họ tên"
-                                name="name"
+                                name="fullName"
                                 rules={[{ required: true, message: 'Họ tên không được để trống!' }]}
                             >
                                 <Input />
@@ -63,7 +61,7 @@ const RegisterPage = () => {
                                 name="email"
                                 rules={[{ required: true, message: 'Email không được để trống!' }]}
                             >
-                                <Input type='email' />
+                                <Input />
                             </Form.Item>
 
                             <Form.Item
@@ -76,37 +74,9 @@ const RegisterPage = () => {
                             </Form.Item>
                             <Form.Item
                                 labelCol={{ span: 24 }} //whole column
-                                label="Tuổi"
-                                name="age"
-                                rules={[{ required: true, message: 'Tuổi không được để trống!' }]}
-                            >
-                                <Input type='number' />
-                            </Form.Item>
-
-
-                            <Form.Item
-                                labelCol={{ span: 24 }} //whole column
-                                name="gender"
-                                label="Giới tính"
-                                rules={[{ required: true, message: 'Giới tính không được để trống!' }]}
-                            >
-                                <Select
-                                    // placeholder="Select a option and change input text above"
-                                    // onChange={onGenderChange}
-                                    allowClear
-                                >
-                                    <Option value="MALE">Nam</Option>
-                                    <Option value="FEMALE">Nữ</Option>
-                                    <Option value="OTHER">Khác</Option>
-                                </Select>
-                            </Form.Item>
-
-
-                            <Form.Item
-                                labelCol={{ span: 24 }} //whole column
-                                label="Địa chỉ"
-                                name="address"
-                                rules={[{ required: true, message: 'Địa chỉ không được để trống!' }]}
+                                label="Số điện thoại"
+                                name="phone"
+                                rules={[{ required: true, message: 'Số điện thoại không được để trống!' }]}
                             >
                                 <Input />
                             </Form.Item>
